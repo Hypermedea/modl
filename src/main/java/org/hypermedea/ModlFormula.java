@@ -24,11 +24,6 @@ import java.util.Set;
 
 public class ModlFormula {
 
-    private static enum Quantifier {
-        EXISTS,
-        FORALL
-    }
-
     private static class OWLBuilder extends ModlBaseListener {
 
         private final Logger logger = LoggerFactory.getLogger(OWLBuilder.class);
@@ -38,8 +33,6 @@ public class ModlFormula {
         private final Map<String, OWLClassExpression> classes = new HashMap<>();
 
         private final Set<OWLAxiom> axioms = new HashSet<>();
-
-        private final Map<String, Quantifier> quantifiers = new HashMap<>();
 
         @Override
         public void exitEnclosedFormula(ModlParser.EnclosedFormulaContext ctx) {
