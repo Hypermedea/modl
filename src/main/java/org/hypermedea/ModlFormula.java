@@ -3,6 +3,7 @@ package org.hypermedea;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.hypermedea.modl.ModlBaseListener;
@@ -10,6 +11,8 @@ import org.hypermedea.modl.ModlLexer;
 import org.hypermedea.modl.ModlParser;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,13 +24,22 @@ import java.util.Set;
 
 public class ModlFormula {
 
+    private static enum Quantifier {
+        EXISTS,
+        FORALL
+    }
+
     private static class OWLBuilder extends ModlBaseListener {
+
+        private final Logger logger = LoggerFactory.getLogger(OWLBuilder.class);
 
         private final OWLDataFactory df = OWLManager.getOWLDataFactory();
 
         private final Map<String, OWLClassExpression> classes = new HashMap<>();
 
         private final Set<OWLAxiom> axioms = new HashSet<>();
+
+        private final Map<String, Quantifier> quantifiers = new HashMap<>();
 
         @Override
         public void exitEnclosedFormula(ModlParser.EnclosedFormulaContext ctx) {
@@ -103,12 +115,49 @@ public class ModlFormula {
         }
 
         @Override
+        public void exitExistentialQuantification(ModlParser.ExistentialQuantificationContext ctx) {
+            String op = ctx.temporalFormula().getText();
+
+            // TODO add quantification
+            OWLClassExpression c = classes.get(op);
+
+            classes.put(ctx.getText(), c);
+        }
+
+        @Override
+        public void exitUniversalQuantification(ModlParser.UniversalQuantificationContext ctx) {
+            String op = ctx.temporalFormula().getText();
+
+            // TODO add quantification
+            OWLClassExpression c = classes.get(op);
+
+            classes.put(ctx.getText(), c);
+        }
+
+        @Override
         public void exitAlways(ModlParser.AlwaysContext ctx) {
             String op = ctx.singleFormula().getText();
 
             OWLClassExpression c = classes.get(op);
 
-            classes.put(ctx.getText(), df.getOWLObjectAllValuesFrom(DTime.g, c));
+            if (isExistentiallyQuantified(ctx)) {
+                OWLClass cfixpoint = df.getOWLClass(IRI.create(ctx.getText()));
+
+                OWLAxiom alpha = df.getOWLSubClassOfAxiom(
+                        cfixpoint,
+                        df.getOWLObjectIntersectionOf(
+                                c,
+                                df.getOWLObjectSomeValuesFrom(DTIME.x, cfixpoint)));
+
+                axioms.add(alpha);
+                classes.put(ctx.getText(), c);
+            } else if (isUniversallyQuantified(ctx)) {
+                classes.put(ctx.getText(), df.getOWLObjectAllValuesFrom(DTIME.g, c));
+            } else {
+                logger.warn("Unknown quantification for formula {}", ctx.getText());
+            }
+
+            logger.info("Translated {}", ctx.getText());
         }
 
         @Override
@@ -117,7 +166,26 @@ public class ModlFormula {
 
             OWLClassExpression c = classes.get(op);
 
-            classes.put(ctx.getText(), df.getOWLObjectSomeValuesFrom(DTime.g, c));
+            if (isExistentiallyQuantified(ctx)) {
+                classes.put(ctx.getText(), df.getOWLObjectSomeValuesFrom(DTIME.g, c));
+            } else if (isUniversallyQuantified(ctx)) {
+                OWLClass cfixpoint = df.getOWLClass(IRI.create(ctx.getText()));
+
+                OWLAxiom alpha = df.getOWLSubClassOfAxiom(
+                        cfixpoint,
+                        df.getOWLObjectIntersectionOf(
+                                df.getOWLObjectSomeValuesFrom(DTIME.g, c),
+                                df.getOWLObjectUnionOf(
+                                        df.getOWLObjectAllValuesFrom(DTIME.x, cfixpoint),
+                                        c)));
+
+                axioms.add(alpha);
+                classes.put(ctx.getText(), c);
+            } else {
+                logger.warn("Unknown quantification for formula {}", ctx.getText());
+            }
+
+            logger.info("Translated {}", ctx.getText());
         }
 
         @Override
@@ -126,7 +194,15 @@ public class ModlFormula {
 
             OWLClassExpression c = classes.get(op);
 
-            classes.put(ctx.getText(), df.getOWLObjectSomeValuesFrom(DTime.x, c));
+            if (isExistentiallyQuantified(ctx)) {
+                classes.put(ctx.getText(), df.getOWLObjectSomeValuesFrom(DTIME.x, c));
+            } else if (isUniversallyQuantified(ctx)) {
+                classes.put(ctx.getText(), df.getOWLObjectAllValuesFrom(DTIME.x, c));
+            } else {
+                logger.warn("Unknown quantification for formula {}", ctx.getText());
+            }
+
+            logger.info("Translated {}", ctx.getText());
         }
 
         @Override
@@ -137,20 +213,31 @@ public class ModlFormula {
             OWLClassExpression cleft = classes.get(left);
             OWLClassExpression cright = classes.get(right);
 
-            OWLClass c = df.getOWLClass(IRI.create(ctx.getText()));
+            OWLClass cfixpoint = df.getOWLClass(IRI.create(ctx.getText()));
+            OWLClassExpression cx = null;
+
+            if (isExistentiallyQuantified(ctx)) {
+                cx = df.getOWLObjectSomeValuesFrom(DTIME.x, cfixpoint);
+            } else if (isUniversallyQuantified(ctx)) {
+                cx = df.getOWLObjectAllValuesFrom(DTIME.x, cfixpoint);
+            } else {
+                logger.warn("Unknown quantification for formula {}", ctx.getText());
+            }
+
+            if (cx == null) return;
 
             OWLAxiom alpha = df.getOWLSubClassOfAxiom(
-                    c,
+                    cfixpoint,
                     df.getOWLObjectIntersectionOf(
-                        df.getOWLObjectSomeValuesFrom(DTime.g, cright),
-                        df.getOWLObjectUnionOf(
-                                cright,
-                                df.getOWLObjectIntersectionOf(
-                                    cleft,
-                                    df.getOWLObjectSomeValuesFrom(DTime.x, c)))));
+                            df.getOWLObjectSomeValuesFrom(DTIME.g, cright),
+                            df.getOWLObjectUnionOf(
+                                    cright,
+                                    df.getOWLObjectIntersectionOf(cleft, cx))));
 
             axioms.add(alpha);
-            classes.put(ctx.getText(), c);
+            classes.put(ctx.getText(), cfixpoint);
+
+            logger.info("Translated {}", ctx.getText());
         }
 
         @Override
@@ -161,18 +248,29 @@ public class ModlFormula {
             OWLClassExpression cleft = classes.get(left);
             OWLClassExpression cright = classes.get(right);
 
-            OWLClass c = df.getOWLClass(IRI.create(ctx.getText()));
+            OWLClass cfixpoint = df.getOWLClass(IRI.create(ctx.getText()));
+            OWLClassExpression cx = null;
+
+            if (isExistentiallyQuantified(ctx)) {
+                cx = df.getOWLObjectSomeValuesFrom(DTIME.x, cfixpoint);
+            } else if (isUniversallyQuantified(ctx)) {
+                cx = df.getOWLObjectAllValuesFrom(DTIME.x, cfixpoint);
+            } else {
+                logger.warn("Unknown quantification for formula {}", ctx.getText());
+            }
+
+            if (cx == null) return;
 
             OWLAxiom alpha = df.getOWLSubClassOfAxiom(
-                    c,
+                    cfixpoint,
                     df.getOWLObjectUnionOf(
                             df.getOWLObjectIntersectionOf(cleft, cright),
-                            df.getOWLObjectIntersectionOf(
-                                    cright,
-                                    df.getOWLObjectSomeValuesFrom(DTime.x, c))));
+                            df.getOWLObjectIntersectionOf(cright, cx)));
 
             axioms.add(alpha);
-            classes.put(ctx.getText(), c);
+            classes.put(ctx.getText(), cfixpoint);
+
+            logger.info("Translated {}", ctx.getText());
         }
 
         public OWLClassExpression getOWLExpression(ParseTree ctx) {
@@ -185,6 +283,15 @@ public class ModlFormula {
 
         // TODO use reflection to call enclosedFormula on any context passed as arg:
         // TODO Class.getMethod("enclosedFormula").invoke()
+
+        private Boolean isExistentiallyQuantified(ParserRuleContext ctx) {
+            return ctx.getParent().getParent() instanceof ModlParser.ExistentialQuantificationContext;
+        }
+
+        private Boolean isUniversallyQuantified(ParserRuleContext ctx) {
+            return ctx.getParent().getParent() instanceof ModlParser.UniversalQuantificationContext
+                || ctx.getParent().getParent() instanceof ModlParser.FormulaContext; // default
+        }
 
     }
 

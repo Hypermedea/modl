@@ -108,6 +108,36 @@ public interface ModlListener extends ParseTreeListener {
 	 */
 	void exitEquivalence(ModlParser.EquivalenceContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ModlParser#quantification}.
+	 * @param ctx the parse tree
+	 */
+	void enterQuantification(ModlParser.QuantificationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#quantification}.
+	 * @param ctx the parse tree
+	 */
+	void exitQuantification(ModlParser.QuantificationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#existentialQuantification}.
+	 * @param ctx the parse tree
+	 */
+	void enterExistentialQuantification(ModlParser.ExistentialQuantificationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#existentialQuantification}.
+	 * @param ctx the parse tree
+	 */
+	void exitExistentialQuantification(ModlParser.ExistentialQuantificationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#universalQuantification}.
+	 * @param ctx the parse tree
+	 */
+	void enterUniversalQuantification(ModlParser.UniversalQuantificationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#universalQuantification}.
+	 * @param ctx the parse tree
+	 */
+	void exitUniversalQuantification(ModlParser.UniversalQuantificationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ModlParser#temporalFormula}.
 	 * @param ctx the parse tree
 	 */

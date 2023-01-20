@@ -13,6 +13,7 @@ grammar Modl;
 formula :
     | singleFormula
     | booleanFormula
+    | quantification
     | temporalFormula ;
 
 singleFormula :
@@ -40,6 +41,16 @@ implication : singleFormula '→' singleFormula ;
 
 equivalence : singleFormula '↔' singleFormula ;
 
+quantification :
+    | existentialQuantification
+    | universalQuantification ;
+
+// TODO support CTL* by allowing any singleFormula after a quantifier
+
+existentialQuantification : 'E' temporalFormula ;
+
+universalQuantification : 'A' temporalFormula ;
+
 temporalFormula :
     | always
     | eventually
@@ -49,7 +60,7 @@ temporalFormula :
 
 always : 'G' singleFormula ;
 
-eventually : 'F' singleFormula ; /* note: finally is a reserved ANTLR keyword */
+eventually : 'F' singleFormula ; // 'finally' is an ANTLR keyword
 
 next : 'X' singleFormula ;
 

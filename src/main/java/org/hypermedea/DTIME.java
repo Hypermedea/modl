@@ -5,7 +5,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
-public class DTime {
+public class DTIME {
 
     private static final OWLDataFactory df = OWLManager.getOWLDataFactory();
 
