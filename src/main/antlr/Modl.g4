@@ -13,10 +13,10 @@ grammar Modl;
 formula :
     | singleFormula
     | booleanFormula
-    | quantification
     | temporalFormula ;
 
 singleFormula :
+    | quantification
     | enclosedFormula
     | negatedFormula
     | proposition ;

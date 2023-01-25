@@ -143,7 +143,7 @@ public class ModlFormula {
                                 df.getOWLObjectSomeValuesFrom(DTIME.x, cfixpoint)));
 
                 axioms.add(alpha);
-                classes.put(ctx.getText(), c);
+                classes.put(ctx.getText(), cfixpoint);
             } else if (isUniversallyQuantified(ctx)) {
                 classes.put(ctx.getText(), df.getOWLObjectAllValuesFrom(DTIME.g, c));
             } else {
@@ -173,7 +173,7 @@ public class ModlFormula {
                                         c)));
 
                 axioms.add(alpha);
-                classes.put(ctx.getText(), c);
+                classes.put(ctx.getText(), cfixpoint);
             } else {
                 logger.warn("Unknown quantification for formula {}", ctx.getText());
             }
