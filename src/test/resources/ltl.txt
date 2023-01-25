@@ -1,1 +1,1 @@
-G(F(p U (q ∨ r)))
+GF(p U (q ∨ r))

@@ -18,36 +18,6 @@ public interface ModlListener extends ParseTreeListener {
 	 */
 	void exitFormula(ModlParser.FormulaContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ModlParser#singleFormula}.
-	 * @param ctx the parse tree
-	 */
-	void enterSingleFormula(ModlParser.SingleFormulaContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ModlParser#singleFormula}.
-	 * @param ctx the parse tree
-	 */
-	void exitSingleFormula(ModlParser.SingleFormulaContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ModlParser#enclosedFormula}.
-	 * @param ctx the parse tree
-	 */
-	void enterEnclosedFormula(ModlParser.EnclosedFormulaContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ModlParser#enclosedFormula}.
-	 * @param ctx the parse tree
-	 */
-	void exitEnclosedFormula(ModlParser.EnclosedFormulaContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ModlParser#negatedFormula}.
-	 * @param ctx the parse tree
-	 */
-	void enterNegatedFormula(ModlParser.NegatedFormulaContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ModlParser#negatedFormula}.
-	 * @param ctx the parse tree
-	 */
-	void exitNegatedFormula(ModlParser.NegatedFormulaContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ModlParser#proposition}.
 	 * @param ctx the parse tree
 	 */
@@ -67,6 +37,46 @@ public interface ModlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBooleanFormula(ModlParser.BooleanFormulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#unaryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnaryBooleanFormula(ModlParser.UnaryBooleanFormulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#unaryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnaryBooleanFormula(ModlParser.UnaryBooleanFormulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#negation}.
+	 * @param ctx the parse tree
+	 */
+	void enterNegation(ModlParser.NegationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#negation}.
+	 * @param ctx the parse tree
+	 */
+	void exitNegation(ModlParser.NegationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#enclosedBinaryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#enclosedBinaryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#binaryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void enterBinaryBooleanFormula(ModlParser.BinaryBooleanFormulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#binaryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void exitBinaryBooleanFormula(ModlParser.BinaryBooleanFormulaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ModlParser#conjunction}.
 	 * @param ctx the parse tree
@@ -148,6 +158,16 @@ public interface ModlListener extends ParseTreeListener {
 	 */
 	void exitTemporalFormula(ModlParser.TemporalFormulaContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ModlParser#unaryTemporalFormula}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnaryTemporalFormula(ModlParser.UnaryTemporalFormulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#unaryTemporalFormula}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnaryTemporalFormula(ModlParser.UnaryTemporalFormulaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ModlParser#always}.
 	 * @param ctx the parse tree
 	 */
@@ -177,6 +197,26 @@ public interface ModlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNext(ModlParser.NextContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#enclosedBinaryTemporalFormula}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnclosedBinaryTemporalFormula(ModlParser.EnclosedBinaryTemporalFormulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#enclosedBinaryTemporalFormula}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnclosedBinaryTemporalFormula(ModlParser.EnclosedBinaryTemporalFormulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#binaryTemporalFormula}.
+	 * @param ctx the parse tree
+	 */
+	void enterBinaryTemporalFormula(ModlParser.BinaryTemporalFormulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#binaryTemporalFormula}.
+	 * @param ctx the parse tree
+	 */
+	void exitBinaryTemporalFormula(ModlParser.BinaryTemporalFormulaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ModlParser#until}.
 	 * @param ctx the parse tree

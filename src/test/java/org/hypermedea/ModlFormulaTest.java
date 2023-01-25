@@ -43,7 +43,7 @@ public class ModlFormulaTest {
 
         ModlFormula phi = ModlFormula.build(in);
 
-        assertEquals(2, phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
+        assertEquals(3, phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
     }
 
 }

@@ -1,1 +1,1 @@
-AF(q ∨ r) ∧ EG(¬q)
+(AF(q ∨ r) ∧ EG¬q)

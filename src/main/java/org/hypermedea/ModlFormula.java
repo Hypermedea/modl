@@ -35,15 +35,6 @@ public class ModlFormula {
         private final Set<OWLAxiom> axioms = new HashSet<>();
 
         @Override
-        public void exitEnclosedFormula(ModlParser.EnclosedFormulaContext ctx) {
-            String op = ctx.formula().getText();
-
-            OWLClassExpression c = classes.get(op);
-
-            classes.put(ctx.getText(), c);
-        }
-
-        @Override
         public void exitProposition(ModlParser.PropositionContext ctx) {
             String id = ctx.ID().getText();
             OWLClass c = df.getOWLClass(IRI.create(id));
@@ -53,8 +44,8 @@ public class ModlFormula {
         }
 
         @Override
-        public void exitNegatedFormula(ModlParser.NegatedFormulaContext ctx) {
-            String op = ctx.singleFormula().getText();
+        public void exitNegation(ModlParser.NegationContext ctx) {
+            String op = ctx.formula().getText();
 
             OWLClassExpression c = classes.get(op);
 
@@ -62,9 +53,18 @@ public class ModlFormula {
         }
 
         @Override
+        public void exitEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx) {
+            String op = ctx.binaryBooleanFormula().getText();
+
+            OWLClassExpression c = classes.get(op);
+
+            classes.put(ctx.getText(), c);
+        }
+
+        @Override
         public void exitDisjunction(ModlParser.DisjunctionContext ctx) {
-            String left = ctx.singleFormula(0).getText();
-            String right = ctx.singleFormula(1).getText();
+            String left = ctx.formula(0).getText();
+            String right = ctx.formula(1).getText();
 
             OWLClassExpression cleft = classes.get(left);
             OWLClassExpression cright = classes.get(right);
@@ -74,8 +74,8 @@ public class ModlFormula {
 
         @Override
         public void exitConjunction(ModlParser.ConjunctionContext ctx) {
-            String left = ctx.singleFormula(0).getText();
-            String right = ctx.singleFormula(1).getText();
+            String left = ctx.formula(0).getText();
+            String right = ctx.formula(1).getText();
 
             OWLClassExpression cleft = classes.get(left);
             OWLClassExpression cright = classes.get(right);
@@ -85,8 +85,8 @@ public class ModlFormula {
 
         @Override
         public void exitImplication(ModlParser.ImplicationContext ctx) {
-            String left = ctx.singleFormula(0).getText();
-            String right = ctx.singleFormula(1).getText();
+            String left = ctx.formula(0).getText();
+            String right = ctx.formula(1).getText();
 
             OWLClassExpression cleft = classes.get(left);
             OWLClassExpression cright = classes.get(right);
@@ -96,8 +96,8 @@ public class ModlFormula {
 
         @Override
         public void exitEquivalence(ModlParser.EquivalenceContext ctx) {
-            String left = ctx.singleFormula(0).getText();
-            String right = ctx.singleFormula(1).getText();
+            String left = ctx.formula(0).getText();
+            String right = ctx.formula(1).getText();
 
             OWLClassExpression cleft = classes.get(left);
             OWLClassExpression cright = classes.get(right);
@@ -129,7 +129,7 @@ public class ModlFormula {
 
         @Override
         public void exitAlways(ModlParser.AlwaysContext ctx) {
-            String op = ctx.singleFormula().getText();
+            String op = ctx.formula().getText();
 
             OWLClassExpression c = classes.get(op);
 
@@ -155,7 +155,7 @@ public class ModlFormula {
 
         @Override
         public void exitEventually(ModlParser.EventuallyContext ctx) {
-            String op = ctx.singleFormula().getText();
+            String op = ctx.formula().getText();
 
             OWLClassExpression c = classes.get(op);
 
@@ -183,7 +183,7 @@ public class ModlFormula {
 
         @Override
         public void exitNext(ModlParser.NextContext ctx) {
-            String op = ctx.singleFormula().getText();
+            String op = ctx.formula().getText();
 
             OWLClassExpression c = classes.get(op);
 
@@ -199,9 +199,18 @@ public class ModlFormula {
         }
 
         @Override
+        public void exitEnclosedBinaryTemporalFormula(ModlParser.EnclosedBinaryTemporalFormulaContext ctx) {
+            String op = ctx.binaryTemporalFormula().getText();
+
+            OWLClassExpression c = classes.get(op);
+
+            classes.put(ctx.getText(), c);
+        }
+
+        @Override
         public void exitUntil(ModlParser.UntilContext ctx) {
-            String left = ctx.singleFormula(0).getText();
-            String right = ctx.singleFormula(1).getText();
+            String left = ctx.formula(0).getText();
+            String right = ctx.formula(1).getText();
 
             OWLClassExpression cleft = classes.get(left);
             OWLClassExpression cright = classes.get(right);
@@ -235,8 +244,8 @@ public class ModlFormula {
 
         @Override
         public void exitRelease(ModlParser.ReleaseContext ctx) {
-            String left = ctx.singleFormula(0).getText();
-            String right = ctx.singleFormula(1).getText();
+            String left = ctx.formula(0).getText();
+            String right = ctx.formula(1).getText();
 
             OWLClassExpression cleft = classes.get(left);
             OWLClassExpression cright = classes.get(right);
@@ -274,16 +283,21 @@ public class ModlFormula {
             return axioms;
         }
 
-        // TODO use reflection to call enclosedFormula on any context passed as arg:
-        // TODO Class.getMethod("enclosedFormula").invoke()
+        // TODO use reflection to call formula on any context passed as arg:
+        // TODO Class.getMethod("formula").invoke()
 
         private Boolean isExistentiallyQuantified(ParserRuleContext ctx) {
-            return ctx.getParent().getParent() instanceof ModlParser.ExistentialQuantificationContext;
+            if (ctx.isEmpty()) return false; // universal quantification by default
+
+            if (ctx instanceof ModlParser.ExistentialQuantificationContext) return true;
+            else return isExistentiallyQuantified(ctx.getParent());
         }
 
         private Boolean isUniversallyQuantified(ParserRuleContext ctx) {
-            return ctx.getParent().getParent() instanceof ModlParser.UniversalQuantificationContext
-                || ctx.getParent().getParent() instanceof ModlParser.FormulaContext; // default
+            if (ctx.isEmpty()) return true; // universal quantification by default
+
+            if (ctx instanceof ModlParser.UniversalQuantificationContext) return true;
+            else return isUniversallyQuantified(ctx.getParent());
         }
 
     }

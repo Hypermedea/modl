@@ -28,42 +28,6 @@ public class ModlBaseListener implements ModlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSingleFormula(ModlParser.SingleFormulaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSingleFormula(ModlParser.SingleFormulaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEnclosedFormula(ModlParser.EnclosedFormulaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEnclosedFormula(ModlParser.EnclosedFormulaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNegatedFormula(ModlParser.NegatedFormulaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNegatedFormula(ModlParser.NegatedFormulaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterProposition(ModlParser.PropositionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -83,6 +47,54 @@ public class ModlBaseListener implements ModlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitBooleanFormula(ModlParser.BooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterUnaryBooleanFormula(ModlParser.UnaryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUnaryBooleanFormula(ModlParser.UnaryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNegation(ModlParser.NegationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNegation(ModlParser.NegationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBinaryBooleanFormula(ModlParser.BinaryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBinaryBooleanFormula(ModlParser.BinaryBooleanFormulaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -184,6 +196,18 @@ public class ModlBaseListener implements ModlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterUnaryTemporalFormula(ModlParser.UnaryTemporalFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUnaryTemporalFormula(ModlParser.UnaryTemporalFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAlways(ModlParser.AlwaysContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -215,6 +239,30 @@ public class ModlBaseListener implements ModlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNext(ModlParser.NextContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEnclosedBinaryTemporalFormula(ModlParser.EnclosedBinaryTemporalFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEnclosedBinaryTemporalFormula(ModlParser.EnclosedBinaryTemporalFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBinaryTemporalFormula(ModlParser.BinaryTemporalFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBinaryTemporalFormula(ModlParser.BinaryTemporalFormulaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

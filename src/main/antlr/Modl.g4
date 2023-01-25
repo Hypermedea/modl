@@ -11,62 +11,71 @@ grammar Modl;
 //formulae : formula (CRLF formula)* ;
 
 formula :
-    | singleFormula
+    | proposition
     | booleanFormula
-    | temporalFormula ;
-
-singleFormula :
-    | quantification
-    | enclosedFormula
-    | negatedFormula
-    | proposition ;
-
-enclosedFormula : '(' formula ')' ;
-
-negatedFormula : '¬' singleFormula ;
+    | temporalFormula
+    | quantification ;
 
 proposition : ID ;
 
 booleanFormula :
+    | unaryBooleanFormula
+    | enclosedBinaryBooleanFormula ;
+
+unaryBooleanFormula : negation ;
+
+negation : '¬' formula ;
+
+enclosedBinaryBooleanFormula : '(' binaryBooleanFormula ')' ;
+
+binaryBooleanFormula :
     | conjunction
     | disjunction
     | implication
     | equivalence ;
 
-conjunction : singleFormula '∧' singleFormula ;
+conjunction : formula '∧' formula ;
 
-disjunction : singleFormula '∨' singleFormula ;
+disjunction : formula '∨' formula ;
 
-implication : singleFormula '→' singleFormula ;
+implication : formula '→' formula ;
 
-equivalence : singleFormula '↔' singleFormula ;
+equivalence : formula '↔' formula ;
 
 quantification :
     | existentialQuantification
     | universalQuantification ;
 
-// TODO support CTL* by allowing any singleFormula after a quantifier
+// TODO support CTL* by allowing any formula after a quantifier
 
 existentialQuantification : 'E' temporalFormula ;
 
 universalQuantification : 'A' temporalFormula ;
 
 temporalFormula :
+    | unaryTemporalFormula
+    | enclosedBinaryTemporalFormula ;
+
+unaryTemporalFormula :
     | always
     | eventually
-    | next
+    | next ;
+
+always : 'G' formula ;
+
+eventually : 'F' formula ; // 'finally' is an ANTLR keyword
+
+next : 'X' formula ;
+
+enclosedBinaryTemporalFormula : '(' binaryTemporalFormula ')' ;
+
+binaryTemporalFormula :
     | until
     | release ;
 
-always : 'G' singleFormula ;
+until : formula 'U' formula ;
 
-eventually : 'F' singleFormula ; // 'finally' is an ANTLR keyword
-
-next : 'X' singleFormula ;
-
-until : singleFormula 'U' singleFormula ;
-
-release : singleFormula 'R' singleFormula ;
+release : formula 'R' formula ;
 
 ID : [a-z][a-zA-Z0-9_]* ;
 
