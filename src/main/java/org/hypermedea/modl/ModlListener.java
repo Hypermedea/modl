@@ -8,6 +8,16 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ModlListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link ModlParser#formulae}.
+	 * @param ctx the parse tree
+	 */
+	void enterFormulae(ModlParser.FormulaeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#formulae}.
+	 * @param ctx the parse tree
+	 */
+	void exitFormulae(ModlParser.FormulaeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ModlParser#formula}.
 	 * @param ctx the parse tree
 	 */

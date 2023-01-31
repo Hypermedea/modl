@@ -35,6 +35,18 @@ public class ModlFormula {
         private final Set<OWLAxiom> axioms = new HashSet<>();
 
         @Override
+        public void exitFormulae(ModlParser.FormulaeContext ctx) {
+            OWLNamedIndividual i = df.getOWLNamedIndividual(IRI.create("start"));
+
+            for (ModlParser.FormulaContext phi : ctx.formula()) {
+                String id = phi.getText();
+                OWLClassExpression c = classes.get(id);
+
+                axioms.add(df.getOWLClassAssertionAxiom(c, i));
+            }
+        }
+
+        @Override
         public void exitProposition(ModlParser.PropositionContext ctx) {
             String id = ctx.ID().getText();
             OWLClass c = df.getOWLClass(IRI.create(id));
@@ -275,10 +287,6 @@ public class ModlFormula {
             logger.info("Translated {}", ctx.getText());
         }
 
-        public OWLClassExpression getOWLExpression(ParseTree ctx) {
-            return classes.get(ctx.getText());
-        }
-
         public Set<OWLAxiom> getOWLAxioms() {
             return axioms;
         }
@@ -309,19 +317,19 @@ public class ModlFormula {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ModlParser parser = new ModlParser(tokens);
 
-        ParseTree ast = parser.formula();
+        ParseTree ast = parser.formulae();
 
         OWLBuilder builder = new OWLBuilder();
         ParseTreeWalker.DEFAULT.walk(builder, ast);
 
-        return new ModlFormula(ast.getText(), builder.getOWLExpression(ast), builder.getOWLAxioms());
+        return new ModlFormula(ast.getText(), builder.getOWLAxioms());
     }
 
     private final String sourceText;
 
     private final OWLOntology ontology;
 
-    private ModlFormula(String sourceText, OWLClassExpression owlClass, Set<OWLAxiom> owlAxioms) {
+    private ModlFormula(String sourceText, Set<OWLAxiom> owlAxioms) {
         this.sourceText = sourceText;
 
         OWLOntologyManager m = OWLManager.createOWLOntologyManager();
@@ -329,11 +337,6 @@ public class ModlFormula {
 
         try {
             this.ontology = m.createOntology();
-
-            OWLNamedIndividual i = df.getOWLNamedIndividual(IRI.create("start"));
-            OWLAxiom alpha = df.getOWLClassAssertionAxiom(owlClass, i);
-            m.addAxiom(this.ontology, alpha);
-
             m.addAxioms(this.ontology, owlAxioms);
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException(e);

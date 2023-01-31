@@ -16,6 +16,18 @@ public class ModlBaseListener implements ModlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterFormulae(ModlParser.FormulaeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFormulae(ModlParser.FormulaeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFormula(ModlParser.FormulaContext ctx) { }
 	/**
 	 * {@inheritDoc}

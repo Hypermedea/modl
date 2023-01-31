@@ -8,7 +8,7 @@
  */
 grammar Modl;
 
-//formulae : formula (CRLF formula)* ;
+formulae : (formula '.')+ ;
 
 formula :
     | proposition
@@ -81,4 +81,4 @@ ID : [a-z][a-zA-Z0-9_]* ;
 
 WS : [ \t]+ -> skip ;
 
-CRLF : '\r'? '\n' ;
+CRLF : '\r'? '\n' -> skip ;

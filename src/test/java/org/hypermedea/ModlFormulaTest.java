@@ -46,4 +46,13 @@ public class ModlFormulaTest {
         assertEquals(3, phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
     }
 
+    @Test
+    public void testBuildFormulae() throws IOException {
+        InputStream in = ModlFormulaTest.class.getClassLoader().getResourceAsStream("process.txt");
+
+        ModlFormula phi = ModlFormula.build(in);
+
+        assertEquals(3, phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
+    }
+
 }
