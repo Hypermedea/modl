@@ -88,13 +88,25 @@ public class ModlBaseListener implements ModlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx) { }
+	@Override public void enterEnclosedBooleanFormula(ModlParser.EnclosedBooleanFormulaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx) { }
+	@Override public void exitEnclosedBooleanFormula(ModlParser.EnclosedBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNAryBooleanFormula(ModlParser.NAryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNAryBooleanFormula(ModlParser.NAryBooleanFormulaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -107,6 +119,42 @@ public class ModlBaseListener implements ModlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitBinaryBooleanFormula(ModlParser.BinaryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOtherNAryBooleanFormula(ModlParser.OtherNAryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOtherNAryBooleanFormula(ModlParser.OtherNAryBooleanFormulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterImplication(ModlParser.ImplicationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitImplication(ModlParser.ImplicationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEquivalence(ModlParser.EquivalenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEquivalence(ModlParser.EquivalenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -136,25 +184,13 @@ public class ModlBaseListener implements ModlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterImplication(ModlParser.ImplicationContext ctx) { }
+	@Override public void enterDisjointUnionFormula(ModlParser.DisjointUnionFormulaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitImplication(ModlParser.ImplicationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEquivalence(ModlParser.EquivalenceContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEquivalence(ModlParser.EquivalenceContext ctx) { }
+	@Override public void exitDisjointUnionFormula(ModlParser.DisjointUnionFormulaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

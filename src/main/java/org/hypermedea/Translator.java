@@ -44,6 +44,8 @@ public class Translator {
 
         OWLOntology o = phi.getOWLAxioms();
 
+        // TODO helpers to add deadlock and other useful properties.
+
         OWLOntologyManager m = OWLManager.createOWLOntologyManager();
         m.saveOntology(o, new TurtleDocumentFormat(), new FileOutputStream("out.ttl"));
     }

@@ -68,15 +68,25 @@ public interface ModlListener extends ParseTreeListener {
 	 */
 	void exitNegation(ModlParser.NegationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ModlParser#enclosedBinaryBooleanFormula}.
+	 * Enter a parse tree produced by {@link ModlParser#enclosedBooleanFormula}.
 	 * @param ctx the parse tree
 	 */
-	void enterEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx);
+	void enterEnclosedBooleanFormula(ModlParser.EnclosedBooleanFormulaContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ModlParser#enclosedBinaryBooleanFormula}.
+	 * Exit a parse tree produced by {@link ModlParser#enclosedBooleanFormula}.
 	 * @param ctx the parse tree
 	 */
-	void exitEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx);
+	void exitEnclosedBooleanFormula(ModlParser.EnclosedBooleanFormulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#nAryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void enterNAryBooleanFormula(ModlParser.NAryBooleanFormulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#nAryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void exitNAryBooleanFormula(ModlParser.NAryBooleanFormulaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ModlParser#binaryBooleanFormula}.
 	 * @param ctx the parse tree
@@ -87,6 +97,36 @@ public interface ModlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBinaryBooleanFormula(ModlParser.BinaryBooleanFormulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#otherNAryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void enterOtherNAryBooleanFormula(ModlParser.OtherNAryBooleanFormulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#otherNAryBooleanFormula}.
+	 * @param ctx the parse tree
+	 */
+	void exitOtherNAryBooleanFormula(ModlParser.OtherNAryBooleanFormulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#implication}.
+	 * @param ctx the parse tree
+	 */
+	void enterImplication(ModlParser.ImplicationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#implication}.
+	 * @param ctx the parse tree
+	 */
+	void exitImplication(ModlParser.ImplicationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ModlParser#equivalence}.
+	 * @param ctx the parse tree
+	 */
+	void enterEquivalence(ModlParser.EquivalenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ModlParser#equivalence}.
+	 * @param ctx the parse tree
+	 */
+	void exitEquivalence(ModlParser.EquivalenceContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ModlParser#conjunction}.
 	 * @param ctx the parse tree
@@ -108,25 +148,15 @@ public interface ModlListener extends ParseTreeListener {
 	 */
 	void exitDisjunction(ModlParser.DisjunctionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ModlParser#implication}.
+	 * Enter a parse tree produced by {@link ModlParser#disjointUnionFormula}.
 	 * @param ctx the parse tree
 	 */
-	void enterImplication(ModlParser.ImplicationContext ctx);
+	void enterDisjointUnionFormula(ModlParser.DisjointUnionFormulaContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ModlParser#implication}.
+	 * Exit a parse tree produced by {@link ModlParser#disjointUnionFormula}.
 	 * @param ctx the parse tree
 	 */
-	void exitImplication(ModlParser.ImplicationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ModlParser#equivalence}.
-	 * @param ctx the parse tree
-	 */
-	void enterEquivalence(ModlParser.EquivalenceContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ModlParser#equivalence}.
-	 * @param ctx the parse tree
-	 */
-	void exitEquivalence(ModlParser.EquivalenceContext ctx);
+	void exitDisjointUnionFormula(ModlParser.DisjointUnionFormulaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ModlParser#quantification}.
 	 * @param ctx the parse tree

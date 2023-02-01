@@ -10,6 +10,8 @@ grammar Modl;
 
 formulae : (formula '.')+ ;
 
+// TODO rootFormula : proposition | nAryBooleanFormula | unaryBooleanFormula | ...
+
 formula :
     | proposition
     | booleanFormula
@@ -20,27 +22,37 @@ proposition : ID ;
 
 booleanFormula :
     | unaryBooleanFormula
-    | enclosedBinaryBooleanFormula ;
+    | disjointUnionFormula
+    | enclosedBooleanFormula ;
 
 unaryBooleanFormula : negation ;
 
 negation : '¬' formula ;
 
-enclosedBinaryBooleanFormula : '(' binaryBooleanFormula ')' ;
+enclosedBooleanFormula : '(' nAryBooleanFormula ')' ;
+
+nAryBooleanFormula :
+    | binaryBooleanFormula
+    | otherNAryBooleanFormula ;
 
 binaryBooleanFormula :
-    | conjunction
-    | disjunction
     | implication
     | equivalence ;
 
-conjunction : formula '∧' formula ;
-
-disjunction : formula '∨' formula ;
+otherNAryBooleanFormula :
+    | conjunction
+    | disjunction
+    | disjointUnionFormula ;
 
 implication : formula '→' formula ;
 
 equivalence : formula '↔' formula ;
+
+conjunction : formula ('∧' formula)+ ;
+
+disjunction : formula ('∨' formula)+ ;
+
+disjointUnionFormula : '{' proposition+ '}' ;
 
 quantification :
     | existentialQuantification

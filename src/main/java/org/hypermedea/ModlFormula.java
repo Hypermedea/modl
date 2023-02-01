@@ -36,13 +36,13 @@ public class ModlFormula {
 
         @Override
         public void exitFormulae(ModlParser.FormulaeContext ctx) {
-            OWLNamedIndividual i = df.getOWLNamedIndividual(IRI.create("start"));
+            OWLClass init = df.getOWLClass(IRI.create("Init"));
 
             for (ModlParser.FormulaContext phi : ctx.formula()) {
                 String id = phi.getText();
                 OWLClassExpression c = classes.get(id);
 
-                axioms.add(df.getOWLClassAssertionAxiom(c, i));
+                axioms.add(df.getOWLSubClassOfAxiom(init, c));
             }
         }
 
@@ -65,34 +65,12 @@ public class ModlFormula {
         }
 
         @Override
-        public void exitEnclosedBinaryBooleanFormula(ModlParser.EnclosedBinaryBooleanFormulaContext ctx) {
-            String op = ctx.binaryBooleanFormula().getText();
+        public void exitEnclosedBooleanFormula(ModlParser.EnclosedBooleanFormulaContext ctx) {
+            String op = ctx.nAryBooleanFormula().getText();
 
             OWLClassExpression c = classes.get(op);
 
             classes.put(ctx.getText(), c);
-        }
-
-        @Override
-        public void exitDisjunction(ModlParser.DisjunctionContext ctx) {
-            String left = ctx.formula(0).getText();
-            String right = ctx.formula(1).getText();
-
-            OWLClassExpression cleft = classes.get(left);
-            OWLClassExpression cright = classes.get(right);
-
-            classes.put(ctx.getText(), df.getOWLObjectUnionOf(cleft, cright));
-        }
-
-        @Override
-        public void exitConjunction(ModlParser.ConjunctionContext ctx) {
-            String left = ctx.formula(0).getText();
-            String right = ctx.formula(1).getText();
-
-            OWLClassExpression cleft = classes.get(left);
-            OWLClassExpression cright = classes.get(right);
-
-            classes.put(ctx.getText(), df.getOWLObjectIntersectionOf(cleft, cright));
         }
 
         @Override
@@ -117,6 +95,35 @@ public class ModlFormula {
             classes.put(ctx.getText(), df.getOWLObjectIntersectionOf(
                     df.getOWLObjectUnionOf(cright, df.getOWLObjectComplementOf(cleft)),
                     df.getOWLObjectUnionOf(cleft, df.getOWLObjectComplementOf(cright))));
+        }
+
+        @Override
+        public void exitDisjunction(ModlParser.DisjunctionContext ctx) {
+            Set<OWLClassExpression> cs = new HashSet<>();
+
+            for (ModlParser.FormulaContext phi : ctx.formula()) {
+                OWLClassExpression c = classes.get(phi.getText());
+                cs.add(c);
+            }
+
+            classes.put(ctx.getText(), df.getOWLObjectUnionOf(cs));
+        }
+
+        @Override
+        public void exitConjunction(ModlParser.ConjunctionContext ctx) {
+            Set<OWLClassExpression> cs = new HashSet<>();
+
+            for (ModlParser.FormulaContext phi : ctx.formula()) {
+                OWLClassExpression c = classes.get(phi.getText());
+                cs.add(c);
+            }
+
+            classes.put(ctx.getText(), df.getOWLObjectIntersectionOf(cs));
+        }
+
+        @Override
+        public void exitDisjointUnionFormula(ModlParser.DisjointUnionFormulaContext ctx) {
+            // TODO
         }
 
         @Override
@@ -333,11 +340,12 @@ public class ModlFormula {
         this.sourceText = sourceText;
 
         OWLOntologyManager m = OWLManager.createOWLOntologyManager();
-        OWLDataFactory df = OWLManager.getOWLDataFactory();
 
         try {
             this.ontology = m.createOntology();
+
             m.addAxioms(this.ontology, owlAxioms);
+            m.addAxioms(this.ontology, DTIME.AXIOMS);
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException(e);
         }

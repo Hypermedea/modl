@@ -25,7 +25,7 @@ public class ModlFormulaTest {
 
         ModlFormula phi = ModlFormula.build(in);
 
-        assertEquals(1, phi.getOWLAxioms().getABoxAxioms(Imports.EXCLUDED).size());
+        assertEquals(1 + DTIME.AXIOMS.size(), phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class ModlFormulaTest {
 
         ModlFormula phi = ModlFormula.build(in);
 
-        assertEquals(3, phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
+        assertEquals(3 + DTIME.AXIOMS.size(), phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class ModlFormulaTest {
 
         ModlFormula phi = ModlFormula.build(in);
 
-        assertEquals(3, phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
+        assertEquals(3 + DTIME.AXIOMS.size(), phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class ModlFormulaTest {
 
         ModlFormula phi = ModlFormula.build(in);
 
-        assertEquals(3, phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
+        assertEquals(3 + DTIME.AXIOMS.size(), phi.getOWLAxioms().getLogicalAxioms(Imports.EXCLUDED).size());
     }
 
 }
