@@ -1,0 +1,10 @@
+#	nb_philosophers	time_ms	(x10)   min_ms  max_ms  avg_ms
+2	46
+4   71
+8   208
+16  947
+32
+64
+128
+256
+512
