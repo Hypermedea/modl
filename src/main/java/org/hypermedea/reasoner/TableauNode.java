@@ -143,6 +143,21 @@ public class TableauNode {
             return nodes;
         }
 
+        // apply universal rule
+        // TODO not in original paper
+        if (!content.getUniversalExpressions().isEmpty()) {
+            OWLClassExpression e = content.getUniversalExpressions().stream().findAny().get();
+
+            TableauNodeContent cnt = new TableauNodeContent(content, content.getOperands(e), Set.of(e));
+            Optional<TableauNode> opt = linkToNode(cnt);
+
+            aggregationStrategy = AndAggregationStrategy.get();
+
+            return opt.isPresent() ? Set.of(opt.get()) : Set.of();
+        }
+
+        // TODO set EXPANDED status after returning (above cases)
+
         status = Status.CONSISTENT;
         throw new NodeStatusSetException(this);
     }

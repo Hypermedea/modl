@@ -1,13 +1,14 @@
 package org.hypermedea.reasoner;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.hypermedea.owlreg.OWLRegDataFactoryImpl;
 import org.junit.jupiter.api.Test;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
 public class ReasonerTest {
 
-    private static final OWLDataFactory DF = OWLManager.getOWLDataFactory();
+    private static final OWLRegDataFactory DF = new OWLRegDataFactoryImpl();
 
     private static final OWLClass C = DF.getOWLClass(IRI.create("C"));
 
@@ -84,6 +85,40 @@ public class ReasonerTest {
 
         Tableau t = Reasoner.get().getTableau(e);
         assertTrue(t.getRootNode().isInconsistent());
+    }
+
+    @Test
+    public void testBasicSatALCRegExpression() {
+        // (p or q) some C or p only not C
+        OWLClassExpression e = DF.getOWLObjectUnionOf(
+                DF.getOWLObjectSomeValuesFrom(DF.getOWLAlternativePath(P, Q), C),
+                DF.getOWLObjectAllValuesFrom(P,
+                        DF.getOWLObjectComplementOf(C)));
+
+        Tableau t = Reasoner.get().getTableau(e);
+        assertTrue(t.getRootNode().isConsistent());
+    }
+
+    @Test
+    public void testBasicUnsatALCRegExpression() {
+        // (p or q) only C and p only not C
+        OWLClassExpression e = DF.getOWLObjectIntersectionOf(
+                DF.getOWLObjectAllValuesFrom(DF.getOWLAlternativePath(P, Q), C),
+                DF.getOWLObjectAllValuesFrom(P,
+                        DF.getOWLObjectComplementOf(C)));
+
+        Tableau t = Reasoner.get().getTableau(e);
+        assertTrue(t.getRootNode().isInconsistent());
+    }
+
+    @Test
+    public void testRecursiveSatALCRegExpression() {
+        fail();
+    }
+
+    @Test
+    public void testRecursiveUnsatALCRegExpression() {
+        fail();
     }
 
 }

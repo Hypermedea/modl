@@ -1,9 +1,9 @@
 package org.hypermedea.reasoner;
 
-import org.hypermedea.owlreg.OWLRegAlternativePath;
-import org.hypermedea.owlreg.OWLRegSequencePath;
-import org.hypermedea.owlreg.OWLRegTestPath;
-import org.hypermedea.owlreg.OWLRegZeroOrMorePath;
+import org.semanticweb.owlapi.model.OWLObjectAlternativePath;
+import org.semanticweb.owlapi.model.OWLObjectSequencePath;
+import org.semanticweb.owlapi.model.OWLObjectTestPath;
+import org.semanticweb.owlapi.model.OWLObjectZeroOrMorePath;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
@@ -54,18 +54,18 @@ public class TableauNodeContent {
             if (p instanceof OWLObjectProperty) {
                 existentialExpressions.add(e);
                 operands.put(e, Set.of(e.getFiller()));
-            } else if (p instanceof OWLRegAlternativePath) {
+            } else if (p instanceof OWLObjectAlternativePath) {
                 betaExpressions.add(e);
-                operands.put(e, getOperands((OWLRegAlternativePath) p, e));
-            } else if (p instanceof OWLRegSequencePath) {
+                operands.put(e, getOperands((OWLObjectAlternativePath) p, e));
+            } else if (p instanceof OWLObjectSequencePath) {
                 alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLRegSequencePath) p, e));
-            } else if (p instanceof OWLRegTestPath) {
+                operands.put(e, getOperands((OWLObjectSequencePath) p, e));
+            } else if (p instanceof OWLObjectTestPath) {
                 alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLRegTestPath) p, e));
-            } else if (p instanceof OWLRegZeroOrMorePath) {
+                operands.put(e, getOperands((OWLObjectTestPath) p, e));
+            } else if (p instanceof OWLObjectZeroOrMorePath) {
                 betaExpressions.add(e);
-                operands.put(e, getOperands((OWLRegZeroOrMorePath) p, e));
+                operands.put(e, getOperands((OWLObjectZeroOrMorePath) p, e));
             }
         }
 
@@ -76,22 +76,22 @@ public class TableauNodeContent {
             if (p instanceof OWLObjectProperty) {
                 universalExpressions.add(e);
                 operands.put(e, Set.of(e.getFiller()));
-            } else if (p instanceof OWLRegAlternativePath) {
+            } else if (p instanceof OWLObjectAlternativePath) {
                 alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLRegAlternativePath) p, e));
-            } else if (p instanceof OWLRegSequencePath) {
+                operands.put(e, getOperands((OWLObjectAlternativePath) p, e));
+            } else if (p instanceof OWLObjectSequencePath) {
                 alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLRegSequencePath) p, e));
-            } else if (p instanceof OWLRegTestPath) {
+                operands.put(e, getOperands((OWLObjectSequencePath) p, e));
+            } else if (p instanceof OWLObjectTestPath) {
                 betaExpressions.add(e);
-                operands.put(e, getOperands((OWLRegTestPath) p, e));
-            } else if (p instanceof OWLRegZeroOrMorePath) {
+                operands.put(e, getOperands((OWLObjectTestPath) p, e));
+            } else if (p instanceof OWLObjectZeroOrMorePath) {
                 alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLRegZeroOrMorePath) p, e));
+                operands.put(e, getOperands((OWLObjectZeroOrMorePath) p, e));
             }
         }
 
-        private Set<OWLClassExpression> getOperands(OWLRegAlternativePath p, OWLObjectSomeValuesFrom e) {
+        private Set<OWLClassExpression> getOperands(OWLObjectAlternativePath p, OWLObjectSomeValuesFrom e) {
             Set<OWLClassExpression> operands = new HashSet<>();
 
             for (OWLObjectPropertyExpression pe : p.getOperands()) {
@@ -101,7 +101,7 @@ public class TableauNodeContent {
             return operands;
         }
 
-        private Set<OWLClassExpression> getOperands(OWLRegSequencePath p, OWLObjectSomeValuesFrom e) {
+        private Set<OWLClassExpression> getOperands(OWLObjectSequencePath p, OWLObjectSomeValuesFrom e) {
             ListIterator<OWLObjectPropertyExpression> it = p.getOrderedOperands().listIterator();
             OWLClassExpression other = e.getFiller();
 
@@ -112,16 +112,16 @@ public class TableauNodeContent {
             return Set.of(other);
         }
 
-        private Set<OWLClassExpression> getOperands(OWLRegTestPath p, OWLObjectSomeValuesFrom e) {
+        private Set<OWLClassExpression> getOperands(OWLObjectTestPath p, OWLObjectSomeValuesFrom e) {
             return Set.of(e.getFiller(), p.getFiller());
         }
 
-        private Set<OWLClassExpression> getOperands(OWLRegZeroOrMorePath p, OWLObjectSomeValuesFrom e) {
+        private Set<OWLClassExpression> getOperands(OWLObjectZeroOrMorePath p, OWLObjectSomeValuesFrom e) {
             OWLClassExpression other = DF.getOWLObjectSomeValuesFrom(p.getFiller(), e);
             return Set.of(e.getFiller(), other);
         }
 
-        private Set<OWLClassExpression> getOperands(OWLRegAlternativePath p, OWLObjectAllValuesFrom e) {
+        private Set<OWLClassExpression> getOperands(OWLObjectAlternativePath p, OWLObjectAllValuesFrom e) {
             Set<OWLClassExpression> operands = new HashSet<>();
 
             for (OWLObjectPropertyExpression pe : p.getOperands()) {
@@ -131,7 +131,7 @@ public class TableauNodeContent {
             return operands;
         }
 
-        private Set<OWLClassExpression> getOperands(OWLRegSequencePath p, OWLObjectAllValuesFrom e) {
+        private Set<OWLClassExpression> getOperands(OWLObjectSequencePath p, OWLObjectAllValuesFrom e) {
             ListIterator<OWLObjectPropertyExpression> it = p.getOrderedOperands().listIterator();
             OWLClassExpression other = e.getFiller();
 
@@ -142,12 +142,12 @@ public class TableauNodeContent {
             return Set.of(other);
         }
 
-        private Set<OWLClassExpression> getOperands(OWLRegTestPath p, OWLObjectAllValuesFrom e) {
+        private Set<OWLClassExpression> getOperands(OWLObjectTestPath p, OWLObjectAllValuesFrom e) {
             OWLClassExpression other = DF.getOWLObjectComplementOf(p.getFiller()).getNNF();
             return Set.of(e.getFiller(), other);
         }
 
-        private Set<OWLClassExpression> getOperands(OWLRegZeroOrMorePath p, OWLObjectAllValuesFrom e) {
+        private Set<OWLClassExpression> getOperands(OWLObjectZeroOrMorePath p, OWLObjectAllValuesFrom e) {
             OWLClassExpression other = DF.getOWLObjectAllValuesFrom(p.getFiller(), e);
             return Set.of(e.getFiller(), other);
         }
@@ -242,4 +242,5 @@ public class TableauNodeContent {
             return false;
         }
     }
+
 }
