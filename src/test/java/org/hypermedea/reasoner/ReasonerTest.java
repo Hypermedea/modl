@@ -101,10 +101,10 @@ public class ReasonerTest {
 
     @Test
     public void testBasicUnsatALCRegExpression() {
-        // (p or q) only C and p only not C
+        // (p or q) only C and p some not C
         OWLClassExpression e = DF.getOWLObjectIntersectionOf(
                 DF.getOWLObjectAllValuesFrom(DF.getOWLAlternativePath(P, Q), C),
-                DF.getOWLObjectAllValuesFrom(P,
+                DF.getOWLObjectSomeValuesFrom(P,
                         DF.getOWLObjectComplementOf(C)));
 
         Tableau t = Reasoner.get().getTableau(e);
