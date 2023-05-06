@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 public class TableauNode {
 
-    public enum Status {
+    private enum Status {
         /**
          * A node is inconsistent if its set of expressions holds a contradiction.
          */
@@ -73,8 +73,15 @@ public class TableauNode {
         return status == Status.UNEXPANDED;
     }
 
+    public void setInconsistent() {
+        if (status == Status.UNEXPANDED) throw new RuntimeException("Unexpanded node cannot be set inconsistent");
+        if (status == Status.CONSISTENT) throw new RuntimeException("Node previously set as consistent cannot change status");
+        // TODO warn that inconsistent node shouldn't change status
+        if (status == Status.EXPANDED) status = Status.INCONSISTENT;
+    }
+
     public void setConsistent() {
-        if (status == Status.UNEXPANDED) throw new RuntimeException("Some node is still unexpanded");
+        if (status == Status.UNEXPANDED) throw new RuntimeException("Unexpanded node cannot be set consistent");
         if (status == Status.INCONSISTENT) throw new RuntimeException("Node previously set as inconsistent cannot change status");
         // TODO warn that consistent node shouldn't change status
         if (status == Status.EXPANDED) status = Status.CONSISTENT;
@@ -95,6 +102,7 @@ public class TableauNode {
             Optional<TableauNode> opt = linkToNode(cnt);
 
             aggregationStrategy = AndAggregationStrategy.get();
+            status = Status.EXPANDED;
 
             return opt.isPresent() ? Set.of(opt.get()) : Set.of();
         }
@@ -113,6 +121,7 @@ public class TableauNode {
             }
 
             aggregationStrategy = OrAggregationStrategy.get();
+            status = Status.EXPANDED;
 
             return nodes;
         }
@@ -139,11 +148,10 @@ public class TableauNode {
             }
 
             aggregationStrategy = AndAggregationStrategy.get();
+            status = Status.EXPANDED;
 
             return nodes;
         }
-
-        // TODO set EXPANDED status after returning (above cases)
 
         status = Status.CONSISTENT;
         throw new NodeStatusSetException(this);
@@ -151,7 +159,7 @@ public class TableauNode {
 
     public void updateStatus() {
         if (aggregationStrategy == null) throw new RuntimeException("tableau node status cannot be updated");
-        status = aggregationStrategy.aggregateStatus(children);
+        aggregationStrategy.aggregateStatus(this);
     }
 
     public TableauNodeContent getContent() {
@@ -171,7 +179,7 @@ public class TableauNode {
     }
 
     private Optional<TableauNode> linkToNode(TableauNodeContent cnt) {
-        Optional<TableauNode> opt = tableau.getDuplicateNode(cnt);
+        Optional<TableauNode> opt = tableau.getCachedNode(cnt);
 
         TableauNode n = opt.isEmpty() ? new TableauNode(cnt, tableau) : opt.get();
 

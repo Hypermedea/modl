@@ -17,10 +17,11 @@ public class OrAggregationStrategy implements AggregationStrategy {
     }
 
     @Override
-    public TableauNode.Status aggregateStatus(Set<TableauNode> nodes) {
-        if (nodes.stream().anyMatch(n -> n.isConsistent())) return TableauNode.Status.CONSISTENT;
-        else if (nodes.stream().allMatch(n -> n.isInconsistent())) return TableauNode.Status.INCONSISTENT;
-        else return TableauNode.Status.EXPANDED;
+    public void aggregateStatus(TableauNode node) {
+        Set<TableauNode> nodes = node.getChildren();
+
+        if (nodes.stream().anyMatch(n -> n.isConsistent())) node.setConsistent();
+        else if (nodes.stream().allMatch(n -> n.isInconsistent())) node.setInconsistent();
     }
 
 }

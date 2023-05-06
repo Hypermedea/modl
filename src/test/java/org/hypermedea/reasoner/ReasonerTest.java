@@ -89,10 +89,10 @@ public class ReasonerTest {
 
     @Test
     public void testBasicSatALCRegExpression() {
-        // (p or q) some C or p only not C
+        // (p or q) some C or p some not C
         OWLClassExpression e = DF.getOWLObjectUnionOf(
                 DF.getOWLObjectSomeValuesFrom(DF.getOWLAlternativePath(P, Q), C),
-                DF.getOWLObjectAllValuesFrom(P,
+                DF.getOWLObjectSomeValuesFrom(P,
                         DF.getOWLObjectComplementOf(C)));
 
         Tableau t = Reasoner.get().getTableau(e);
@@ -112,13 +112,46 @@ public class ReasonerTest {
     }
 
     @Test
-    public void testRecursiveSatALCRegExpression() {
-        fail();
+    public void testSatALCRegExpression() {
+        // (p or q)* only C or p some not C
+        OWLClassExpression e = DF.getOWLObjectUnionOf(
+                DF.getOWLObjectAllValuesFrom(
+                        DF.getOWLZeroOrMorePath(DF.getOWLAlternativePath(P, Q)),
+                        C),
+                DF.getOWLObjectSomeValuesFrom(P,
+                        DF.getOWLObjectComplementOf(C)));
+
+        Tableau t = Reasoner.get().getTableau(e);
+        assertTrue(t.getRootNode().isConsistent());
     }
 
     @Test
-    public void testRecursiveUnsatALCRegExpression() {
-        fail();
+    public void testUnsatALCRegExpression() {
+        // (p or q)* only C and p some not C
+        OWLClassExpression e = DF.getOWLObjectIntersectionOf(
+                DF.getOWLObjectAllValuesFrom(
+                        DF.getOWLZeroOrMorePath(DF.getOWLAlternativePath(P, Q)),
+                        C),
+                DF.getOWLObjectSomeValuesFrom(P,
+                        DF.getOWLObjectComplementOf(C)));
+
+        Tableau t = Reasoner.get().getTableau(e);
+        assertTrue(t.getRootNode().isInconsistent());
+    }
+
+    @Test
+    public void testProcrastinatingUnsatALCRegExpression() {
+        // (p or q)* some C and p* only not C
+        OWLClassExpression e = DF.getOWLObjectIntersectionOf(
+                DF.getOWLObjectSomeValuesFrom(
+                        DF.getOWLZeroOrMorePath(DF.getOWLAlternativePath(P, Q)),
+                        C),
+                DF.getOWLObjectAllValuesFrom(
+                        DF.getOWLZeroOrMorePath(P),
+                        DF.getOWLObjectComplementOf(C)));
+
+        Tableau t = Reasoner.get().getTableau(e);
+        assertTrue(t.getRootNode().isInconsistent());
     }
 
 }

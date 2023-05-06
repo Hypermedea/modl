@@ -35,7 +35,7 @@ public class Tableau {
         return root;
     }
 
-    public Optional<TableauNode> getDuplicateNode(TableauNodeContent cnt) {
+    public Optional<TableauNode> getCachedNode(TableauNodeContent cnt) {
         return nodes.stream().filter(n -> n.getContent().equals(cnt)).findAny();
     }
 

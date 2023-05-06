@@ -7,10 +7,10 @@ import java.util.Set;
 public interface AggregationStrategy {
 
     /**
-     * Aggregate the status of some nodes.
+     * Aggregate the status of children of some node and set status of that node if known.
      *
-     * @param nodes the nodes whose status is to aggregate
+     * @param node the node whose status is to set
      */
-    TableauNode.Status aggregateStatus(Set<TableauNode> nodes);
+    void aggregateStatus(TableauNode node);
 
 }
