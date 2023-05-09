@@ -140,11 +140,26 @@ public class ReasonerTest {
     }
 
     @Test
-    public void testProcrastinatingUnsatALCRegExpression() {
+    public void testProcrastinatingSatALCRegExpression() {
         // (p or q)* some C and p* only not C
         OWLClassExpression e = DF.getOWLObjectIntersectionOf(
                 DF.getOWLObjectSomeValuesFrom(
                         DF.getOWLZeroOrMorePath(DF.getOWLAlternativePath(P, Q)),
+                        C),
+                DF.getOWLObjectAllValuesFrom(
+                        DF.getOWLZeroOrMorePath(P),
+                        DF.getOWLObjectComplementOf(C)));
+
+        Tableau t = Reasoner.get().getTableau(e);
+        assertTrue(t.getRootNode().isConsistent());
+    }
+
+    @Test
+    public void testProcrastinatingUnsatALCRegExpression() {
+        // p* some C and p* only not C
+        OWLClassExpression e = DF.getOWLObjectIntersectionOf(
+                DF.getOWLObjectSomeValuesFrom(
+                        DF.getOWLZeroOrMorePath(P),
                         C),
                 DF.getOWLObjectAllValuesFrom(
                         DF.getOWLZeroOrMorePath(P),

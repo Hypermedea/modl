@@ -2,9 +2,8 @@ package org.hypermedea.reasoner;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of a reasoner for ALC<sub>reg</sub> (and its syntactic variant, PDL) based on a Tableau algorithm.
@@ -12,7 +11,7 @@ import java.util.Set;
  *
  * <ol>
  *     <li>apply alpha-rules and beta-rules until saturation</li>
- *     <li>apply sigma-rule</li>
+ *     <li>apply existential rule</li>
  *     <li>verify satisfaction of eventualities</li>
  * </ol>
  */
@@ -46,28 +45,33 @@ public class Reasoner {
                 Set<TableauNode> nodes = n.expand();
                 q.addAll(nodes);
             } catch (NodeStatusSetException e) {
-                propagateStatus(e.getNode());
+                propagateStatus(e.getNode().getParents());
 
-                // TODO check/repair eventualities
-
-                if (t.getRootNode().isConsistent() || t.getRootNode().isInconsistent()) {
-                    return;
-                }
+                if (t.getRootNode().hasStatusSet()) return;
             }
         }
+
+        propagateStatus(t.getCache().stream().filter(n -> !n.hasStatusSet()).collect(Collectors.toSet()));
 
         t.updateRemainingNodes();
     }
 
-    private static void propagateStatus(TableauNode startNode) {
+    private static void propagateStatus(Set<TableauNode> startNodes) {
         Queue<TableauNode> q = new LinkedList<>();
-        q.addAll(startNode.getParents());
+        q.addAll(startNodes);
+
+        Set<TableauNode> processedNodes = new HashSet<>();
 
         while (!q.isEmpty()) {
             TableauNode n = q.poll();
+            processedNodes.add(n);
 
             n.updateStatus();
-            q.addAll(n.getParents());
+
+            if (n.hasStatusSet()) {
+                q.addAll(n.getParents());
+                q.removeAll(processedNodes);
+            }
         }
     }
 

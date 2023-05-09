@@ -17,34 +17,29 @@ public class TableauNodeContent {
         @Override
         public void visit(OWLClass c) {
             OWLObjectComplementOf neg = DF.getOWLObjectComplementOf(c);
-            if (atomicExpressions.contains(neg)) {
-                throw new InconsistentContentException();
-            } else {
-                atomicExpressions.add(c);
-            }
+
+            if (atomicExpressions.contains(neg)) holdsContradiction = true;
+            atomicExpressions.add(c);
         }
 
         @Override
         public void visit(OWLObjectComplementOf e) {
             if (!e.isClassExpressionLiteral()) {
                 throw new RuntimeException("The input expression should be in negation normal form");
-            } else if (atomicExpressions.contains(e.getOperand())) {
-                throw new InconsistentContentException();
-            } else {
-                atomicExpressions.add(e);
             }
+
+            atomicExpressions.add(e);
+            if (atomicExpressions.contains(e.getOperand())) holdsContradiction = true;
         }
 
         @Override
         public void visit(OWLObjectIntersectionOf e) {
             alphaExpressions.add(e);
-            operands.put(e, e.getOperands());
         }
 
         @Override
         public void visit(OWLObjectUnionOf e) {
             betaExpressions.add(e);
-            operands.put(e, e.getOperands());
         }
 
         @Override
@@ -53,19 +48,16 @@ public class TableauNodeContent {
 
             if (p instanceof OWLObjectProperty) {
                 existentialExpressions.add(e);
-                operands.put(e, Set.of(e.getFiller()));
             } else if (p instanceof OWLObjectAlternativePath) {
-                betaExpressions.add(e);
-                operands.put(e, getOperands((OWLObjectAlternativePath) p, e));
+                betaExpressions.add(DF.getOWLObjectUnionOf(getOperands((OWLObjectAlternativePath) p, e)));
             } else if (p instanceof OWLObjectSequencePath) {
-                alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLObjectSequencePath) p, e));
+                alphaExpressions.add(DF.getOWLObjectIntersectionOf(getOperands((OWLObjectSequencePath) p, e)));
             } else if (p instanceof OWLObjectTestPath) {
-                alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLObjectTestPath) p, e));
+                alphaExpressions.add(DF.getOWLObjectIntersectionOf(getOperands((OWLObjectTestPath) p, e)));
             } else if (p instanceof OWLObjectZeroOrMorePath) {
-                betaExpressions.add(e);
-                operands.put(e, getOperands((OWLObjectZeroOrMorePath) p, e));
+                OWLObjectUnionOf other = DF.getOWLObjectUnionOf(getOperands((OWLObjectZeroOrMorePath) p, e));
+                betaExpressions.add(other);
+                eventualities.put(other, e.getFiller());
             }
         }
 
@@ -75,19 +67,14 @@ public class TableauNodeContent {
 
             if (p instanceof OWLObjectProperty) {
                 universalExpressions.add(e);
-                operands.put(e, Set.of(e.getFiller()));
             } else if (p instanceof OWLObjectAlternativePath) {
-                alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLObjectAlternativePath) p, e));
+                alphaExpressions.add(DF.getOWLObjectIntersectionOf(getOperands((OWLObjectAlternativePath) p, e)));
             } else if (p instanceof OWLObjectSequencePath) {
-                alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLObjectSequencePath) p, e));
+                alphaExpressions.add(DF.getOWLObjectIntersectionOf(getOperands((OWLObjectSequencePath) p, e)));
             } else if (p instanceof OWLObjectTestPath) {
-                betaExpressions.add(e);
-                operands.put(e, getOperands((OWLObjectTestPath) p, e));
+                betaExpressions.add(DF.getOWLObjectUnionOf(getOperands((OWLObjectTestPath) p, e)));
             } else if (p instanceof OWLObjectZeroOrMorePath) {
-                alphaExpressions.add(e);
-                operands.put(e, getOperands((OWLObjectZeroOrMorePath) p, e));
+                alphaExpressions.add(DF.getOWLObjectIntersectionOf(getOperands((OWLObjectZeroOrMorePath) p, e)));
             }
         }
 
@@ -160,22 +147,18 @@ public class TableauNodeContent {
 
     private final Set<OWLClassExpression> atomicExpressions = new HashSet<>();
 
-    private final Set<OWLClassExpression> alphaExpressions = new HashSet<>();
+    private final Set<OWLObjectIntersectionOf> alphaExpressions = new HashSet<>();
 
-    private final Set<OWLClassExpression> betaExpressions = new HashSet<>();
+    private final Set<OWLObjectUnionOf> betaExpressions = new HashSet<>();
 
     private final Set<OWLObjectSomeValuesFrom> existentialExpressions = new HashSet<>();
 
     private final Set<OWLObjectAllValuesFrom> universalExpressions = new HashSet<>();
 
-    private final Map<OWLClassExpression, Set<OWLClassExpression>> operands = new HashMap<>();
+    private final Map<OWLClassExpression, OWLClassExpression> eventualities = new HashMap<>();
 
     public TableauNodeContent(Set<OWLClassExpression> additions) {
-        try {
-            for (OWLClassExpression e : additions) e.accept(new TableauNodeVisitor());
-        } catch (InconsistentContentException e) {
-            holdsContradiction = true;
-        }
+        for (OWLClassExpression e : additions) e.accept(new TableauNodeVisitor());
     }
 
     public TableauNodeContent(TableauNodeContent other, Set<OWLClassExpression> additions, Set<OWLClassExpression> deletions) {
@@ -184,20 +167,17 @@ public class TableauNodeContent {
         betaExpressions.addAll(other.betaExpressions);
         existentialExpressions.addAll(other.existentialExpressions);
         universalExpressions.addAll(other.universalExpressions);
-        operands.putAll(other.operands);
+        eventualities.putAll(other.eventualities);
 
         atomicExpressions.removeAll(deletions);
         alphaExpressions.removeAll(deletions);
         betaExpressions.removeAll(deletions);
         existentialExpressions.removeAll(deletions);
         universalExpressions.removeAll(deletions);
+        deletions.forEach(e -> eventualities.remove(e));
         // TODO remove operands (only saves space)
 
-        try {
-            for (OWLClassExpression e : additions) e.accept(new TableauNodeVisitor());
-        } catch (InconsistentContentException e) {
-            holdsContradiction = true;
-        }
+        for (OWLClassExpression e : additions) e.accept(new TableauNodeVisitor());
     }
 
     public boolean holdsContradiction() {
@@ -208,11 +188,11 @@ public class TableauNodeContent {
         return atomicExpressions;
     }
 
-    public Set<OWLClassExpression> getAlphaExpressions() {
+    public Set<OWLObjectIntersectionOf> getAlphaExpressions() {
         return alphaExpressions;
     }
 
-    public Set<OWLClassExpression> getBetaExpressions() {
+    public Set<OWLObjectUnionOf> getBetaExpressions() {
         return betaExpressions;
     }
 
@@ -224,8 +204,20 @@ public class TableauNodeContent {
         return universalExpressions;
     }
 
-    public Set<OWLClassExpression> getOperands(OWLClassExpression e) {
-        return operands.get(e);
+    public boolean hasEventuality(OWLClassExpression e) {
+        return eventualities.containsKey(e);
+    }
+
+    public OWLClassExpression getEventualityTarget(OWLClassExpression e) {
+        return eventualities.get(e);
+    }
+
+    public boolean contains(OWLClassExpression e) {
+        return atomicExpressions.contains(e)
+                || alphaExpressions.contains(e)
+                || betaExpressions.contains(e)
+                || existentialExpressions.contains(e)
+                || universalExpressions.contains(e);
     }
 
     @Override

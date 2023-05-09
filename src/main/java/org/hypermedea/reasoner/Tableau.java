@@ -39,14 +39,18 @@ public class Tableau {
         return nodes.stream().filter(n -> n.getContent().equals(cnt)).findAny();
     }
 
+    public Set<TableauNode> getCache() {
+        return nodes;
+    }
+
     public void addNode(TableauNode n) {
-        // TODO call from node
         nodes.add(n);
     }
 
     public void updateRemainingNodes() {
         for (TableauNode n : nodes) {
-            n.setConsistent();
+            if (n.isExpanded()) n.setConsistent();
+            else if (n.isUnexpanded()) throw new RuntimeException("Node is still unexpanded");
         }
     }
 

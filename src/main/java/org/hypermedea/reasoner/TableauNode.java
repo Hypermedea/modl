@@ -2,11 +2,9 @@ package org.hypermedea.reasoner;
 
 import org.hypermedea.reasoner.aggregation.AggregationStrategy;
 import org.hypermedea.reasoner.aggregation.AndAggregationStrategy;
+import org.hypermedea.reasoner.aggregation.OrForwardBackwardAggregationStrategy;
 import org.hypermedea.reasoner.aggregation.OrAggregationStrategy;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -43,7 +41,9 @@ public class TableauNode {
 
     private final Set<TableauNode> children = new HashSet<>();
 
-    private final Set<TableauNode> parents = new HashSet<>();
+    private Optional<TableauNode> forwardParent = Optional.empty();
+
+    private final Set<TableauNode> backwardParents = new HashSet<>();
 
     private final Tableau tableau;
 
@@ -63,6 +63,10 @@ public class TableauNode {
 
     public boolean isConsistent() {
         return status == Status.CONSISTENT;
+    }
+
+    public boolean hasStatusSet() {
+        return isConsistent() || isInconsistent();
     }
 
     public boolean isExpanded() {
@@ -96,9 +100,9 @@ public class TableauNode {
 
         // apply alpha-rule (conjunction)
         if (!content.getAlphaExpressions().isEmpty()) {
-            OWLClassExpression e = content.getAlphaExpressions().stream().findAny().get();
+            OWLObjectIntersectionOf e = content.getAlphaExpressions().stream().findAny().get();
 
-            TableauNodeContent cnt = new TableauNodeContent(content, content.getOperands(e), Set.of(e));
+            TableauNodeContent cnt = new TableauNodeContent(content, e.getOperands(), Set.of(e));
             Optional<TableauNode> opt = linkToNode(cnt);
 
             aggregationStrategy = AndAggregationStrategy.get();
@@ -109,18 +113,21 @@ public class TableauNode {
 
         // apply beta-rule (disjunction)
         if (!content.getBetaExpressions().isEmpty()) {
-            OWLClassExpression e = content.getBetaExpressions().stream().findAny().get();
+            OWLObjectUnionOf e = content.getBetaExpressions().stream().findAny().get();
 
             Set<TableauNode> nodes = new HashSet<>();
 
-            for (OWLClassExpression op : content.getOperands(e)) {
+            for (OWLClassExpression op : e.getOperands()) {
                 TableauNodeContent cnt = new TableauNodeContent(content, Set.of(op), Set.of(e));
                 Optional<TableauNode> opt = linkToNode(cnt);
 
                 if (opt.isPresent()) nodes.add(opt.get());
             }
 
-            aggregationStrategy = OrAggregationStrategy.get();
+            aggregationStrategy = content.hasEventuality(e)
+                    ? OrForwardBackwardAggregationStrategy.get(e)
+                    : OrAggregationStrategy.get();
+
             status = Status.EXPANDED;
 
             return nodes;
@@ -133,18 +140,16 @@ public class TableauNode {
             for (OWLObjectSomeValuesFrom e : content.getExistentialExpressions()) {
                 OWLObjectPropertyExpression p = e.getProperty();
 
-                for (OWLClassExpression op : content.getOperands(e)) {
-                    Stream<OWLObjectAllValuesFrom> str = content.getUniversalExpressions().stream().filter(other -> other.getProperty().equals(p));
+                Stream<OWLObjectAllValuesFrom> str = content.getUniversalExpressions().stream().filter(other -> other.getProperty().equals(p));
 
-                    Set<OWLClassExpression> additions = new HashSet<>();
-                    additions.addAll(str.map(other -> other.getFiller()).collect(Collectors.toSet()));
-                    additions.add(op);
+                Set<OWLClassExpression> additions = new HashSet<>();
+                additions.addAll(str.map(other -> other.getFiller()).collect(Collectors.toSet()));
+                additions.add(e.getFiller());
 
-                    TableauNodeContent cnt = new TableauNodeContent(additions);
-                    Optional<TableauNode> opt = linkToNode(cnt);
+                TableauNodeContent cnt = new TableauNodeContent(additions);
+                Optional<TableauNode> opt = linkToNode(cnt);
 
-                    if (opt.isPresent()) nodes.add(opt.get());
-                }
+                if (opt.isPresent()) nodes.add(opt.get());
             }
 
             aggregationStrategy = AndAggregationStrategy.get();
@@ -158,7 +163,7 @@ public class TableauNode {
     }
 
     public void updateStatus() {
-        if (aggregationStrategy == null) throw new RuntimeException("tableau node status cannot be updated");
+        if (aggregationStrategy == null) throw new RuntimeException("Node status cannot be updated");
         aggregationStrategy.aggregateStatus(this);
     }
 
@@ -171,25 +176,35 @@ public class TableauNode {
     }
 
     public Set<TableauNode> getParents() {
-        return parents;
+        Set<TableauNode> allParents = new HashSet<>();
+
+        if (forwardParent.isPresent()) allParents.add(forwardParent.get());
+        allParents.addAll(backwardParents);
+
+        return allParents;
     }
 
-    public void addParent(TableauNode n) {
-        parents.add(n);
+    public Optional<TableauNode> getForwardParent() {
+        return forwardParent;
     }
 
     private Optional<TableauNode> linkToNode(TableauNodeContent cnt) {
-        Optional<TableauNode> opt = tableau.getCachedNode(cnt);
+        Optional<TableauNode> cache = tableau.getCachedNode(cnt);
 
-        TableauNode n = opt.isEmpty() ? new TableauNode(cnt, tableau) : opt.get();
-
-        children.add(n);
-        n.addParent(this);
-
-        if (opt.isEmpty()) {
+        if (cache.isEmpty()) {
+            TableauNode n = new TableauNode(cnt, tableau);
             tableau.addNode(n);
+
+            children.add(n);
+            n.forwardParent = Optional.of(this);
+
             return Optional.of(n);
         } else {
+            TableauNode n = cache.get();
+
+            children.add(n);
+            n.backwardParents.add(this);
+
             return Optional.empty();
         }
     }
