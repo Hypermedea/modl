@@ -2,8 +2,8 @@ package org.hypermedea.reasoner;
 
 import org.hypermedea.reasoner.aggregation.AggregationStrategy;
 import org.hypermedea.reasoner.aggregation.AndAggregationStrategy;
-import org.hypermedea.reasoner.aggregation.OrForwardBackwardAggregationStrategy;
 import org.hypermedea.reasoner.aggregation.OrAggregationStrategy;
+import org.hypermedea.reasoner.aggregation.OrForwardBackwardAggregationStrategy;
 import org.semanticweb.owlapi.model.*;
 
 import java.util.HashSet;

@@ -2,8 +2,6 @@ package org.hypermedea.reasoner.aggregation;
 
 import org.hypermedea.reasoner.TableauNode;
 
-import java.util.Set;
-
 public interface AggregationStrategy {
 
     /**

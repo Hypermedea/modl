@@ -1,5 +1,7 @@
 package org.hypermedea.reasoner;
 
+import org.hypermedea.owlreg.OWLRegObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import java.util.*;
@@ -16,6 +18,10 @@ import java.util.stream.Collectors;
  * </ol>
  */
 public class Reasoner {
+
+    static {
+        ToStringRenderer.getInstance().setRenderer(new OWLRegObjectRenderer());
+    }
 
     private static Reasoner instance = new Reasoner();
 
